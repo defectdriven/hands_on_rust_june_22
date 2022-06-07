@@ -32,25 +32,27 @@ pub fn player_input(
             let mut hit_something = false;
             enemies
                 .iter(ecs)
-                .filter(|(_, pos)| {
-                    **pos == destination
-                })
-                .for_each(|(entity, _) | {
+                .filter(|(_, pos)| **pos == destination)
+                .for_each(|(entity, _)| {
                     hit_something = true;
                     did_something = true;
-                    commands
-                        .push(((), WantsToAttack{
+                    commands.push((
+                        (),
+                        WantsToAttack {
                             attacker: player_entity,
-                            victim: *entity
-                        }));
+                            victim: *entity,
+                        },
+                    ));
                 });
             if !hit_something {
                 did_something = true;
-                commands
-                    .push(((), WantsToMove{
+                commands.push((
+                    (),
+                    WantsToMove {
                         entity: player_entity,
-                        destination
-                    }));
+                        destination,
+                    },
+                ));
             }
         }
         if !did_something {
@@ -58,9 +60,9 @@ pub fn player_input(
                 .entry_mut(player_entity)
                 .unwrap()
                 .get_component_mut::<Health>()
-                {
-                    health.current = i32::min(health.max, health.current+1);
-                }
+            {
+                health.current = i32::min(health.max, health.current + 1);
+            }
         }
         *turn_state = TurnState::PlayerTurn;
     }
