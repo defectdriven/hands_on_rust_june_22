@@ -7,8 +7,13 @@ mod drunkard;
 use drunkard::DrunkardsWalkArchitect;
 mod prefab;
 use prefab::apply_fortress;
+mod themes;
+use themes::*;
 trait MapArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
+}
+pub trait MapTheme : Sync + Send {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType;
 }
 const NUM_ROOMS: usize = 20;
 const UNREACHABLE: &f32 = &f32::MAX;
@@ -19,6 +24,7 @@ pub struct MapBuilder {
     pub monster_spawns: Vec<Point>,
     pub player_start: Point,
     pub amulet_start: Point,
+    pub theme: Box<dyn MapTheme>
 }
 
 impl MapBuilder {
@@ -30,6 +36,10 @@ impl MapBuilder {
         };
         let mut mb = architect.new(rng);
         apply_fortress(&mut mb, rng);
+        mb.theme = match rng.range(0, 2) {
+            0 => DungeonTheme::new(),
+            _ => ForestTheme::new()
+        };
         mb
     }
 
