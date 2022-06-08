@@ -26,14 +26,15 @@ pub fn player_input(
                     .find_map(|(entity, pos)| Some((*entity, *pos)))
                     .unwrap();
                 let mut items = <(Entity, &Item, &Point)>::query();
-                items.iter(ecs)
+                items
+                    .iter(ecs)
                     .filter(|(_entity, _item, &item_pos)| item_pos == player_pos)
                     .for_each(|(entity, _item, _item_pos)| {
                         commands.remove_component::<Point>(*entity);
                         commands.add_component(*entity, Carried(player));
                     });
-                Point::new(0,0)
-            },
+                Point::new(0, 0)
+            }
             VirtualKeyCode::Key1 => use_item(0, ecs, commands),
             VirtualKeyCode::Key2 => use_item(1, ecs, commands),
             VirtualKeyCode::Key3 => use_item(2, ecs, commands),
@@ -81,12 +82,11 @@ pub fn player_input(
     }
 }
 
-fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer) 
--> Point {
+fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer) -> Point {
     let player_entity = <(Entity, &Player)>::query()
-                    .iter(ecs)
-                    .find_map(|(entity, _player)| Some(*entity))
-                    .unwrap();
+        .iter(ecs)
+        .find_map(|(entity, _player)| Some(*entity))
+        .unwrap();
 
     let item_entity = <(Entity, &Item, &Carried)>::query()
         .iter(ecs)
@@ -96,11 +96,13 @@ fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer)
         .find_map(|(_, (item_entity, _, _))| Some(*item_entity));
 
     if let Some(item_entity) = item_entity {
-        commands
-            .push(((), ActivateItem{
+        commands.push((
+            (),
+            ActivateItem {
                 used_by: player_entity,
-                item: item_entity
-            }));
+                item: item_entity,
+            },
+        ));
     }
 
     Point::zero()

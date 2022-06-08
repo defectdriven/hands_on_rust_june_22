@@ -5,14 +5,10 @@ use crate::prelude::*;
 #[read_component(Point)]
 #[read_component(Health)]
 #[read_component(AmuletOfYala)]
-pub fn end_turn(
-    ecs: &SubWorld,
-    #[resource] turn_state: &mut TurnState,
-    #[resource] map: &Map
-) {
+pub fn end_turn(ecs: &SubWorld, #[resource] turn_state: &mut TurnState, #[resource] map: &Map) {
     let mut player_hp = <(&Health, &Point)>::query().filter(component::<Player>());
     let mut amulet = <&Point>::query().filter(component::<AmuletOfYala>());
-    let amulet_default = Point::new(-1,-1);
+    let amulet_default = Point::new(-1, -1);
     let amulet_position = amulet.iter(ecs).nth(0).unwrap_or(&amulet_default);
     let current_state = turn_state.clone();
     let mut new_state = match current_state {
